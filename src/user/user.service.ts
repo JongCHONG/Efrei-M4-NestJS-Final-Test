@@ -1,18 +1,30 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { User, UserDocument } from './user.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UserService {
-    constructor() {}
+    constructor(
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
+    ) {}
 
-    addUser(email: string): Promise<void> {
-        throw new NotImplementedException();
+    async addUser(email: string): Promise<User> {
+        const newUser = new this.userModel({ email });
+        return newUser.save();
     }
 
-    getUser(email: string): Promise<unknown> {
-        throw new NotImplementedException();
+    async getUser(email: string): Promise<User> {
+        const payload = await this.userModel.findOne({ email }).exec();        
+        return payload;
     }
 
-    resetData(): Promise<void> {
-        throw new NotImplementedException();
+    resetData() {
+        this.userModel.deleteMany({});
+    }
+
+    isEmail(email: string): boolean {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     }
 }

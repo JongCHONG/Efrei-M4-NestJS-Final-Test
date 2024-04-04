@@ -3,7 +3,12 @@ import { ConfigurationModule } from './infrastructure/configuration/configuratio
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { Module } from '@nestjs/common';
 
+
 @Module({
-    imports: [AppRoutingModule, ConfigurationModule, DatabaseModule],
+    imports: [
+        AppRoutingModule,
+        ConfigurationModule,
+        DatabaseModule,
+    ],
 })
 export class AppModule {}
