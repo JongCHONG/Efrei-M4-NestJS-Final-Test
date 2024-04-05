@@ -15,12 +15,13 @@ export class UserService {
     }
 
     async getUser(email: string): Promise<User> {
-        const payload = await this.userModel.findOne({ email }).exec();        
+        const payload = await this.userModel.findOne({ email });
+        
         return payload;
     }
 
-    resetData() {
-        this.userModel.deleteMany({});
+    async resetData() {
+        await this.userModel.deleteMany({});
     }
 
     isEmail(email: string): boolean {
