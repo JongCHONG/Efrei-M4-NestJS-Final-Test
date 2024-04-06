@@ -15,17 +15,14 @@ export class UserService {
     }
 
     async getUser(email: string): Promise<User> {
-        const payload = await this.userModel.findOne({ email });
-        
-        return payload;
+        return await this.userModel.findOne({ email });
+    }
+
+    async getUserById(userId: string): Promise<User> {        
+        return await this.userModel.findById(userId);
     }
 
     async resetData() {
         await this.userModel.deleteMany({});
-    }
-
-    isEmail(email: string): boolean {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
     }
 }

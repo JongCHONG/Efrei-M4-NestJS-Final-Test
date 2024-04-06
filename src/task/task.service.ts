@@ -9,23 +9,24 @@ export class TaskService {
         @InjectModel(Task.name) private taskModel: Model<TaskDocument>,
     ) {}
 
-    async addTask(name: string, userId: string, priority: number): Promise<Task> {
+    async addTask(
+        name: string,
+        userId: string,
+        priority: number,
+    ): Promise<Task> {
         const newTask = new this.taskModel({ name, userId, priority });
         return newTask.save();
     }
 
     async getTaskByName(name: string): Promise<Task> {
-        const payload = await this.taskModel.findOne({ name }).exec();
-
-        return payload;
+        return await this.taskModel.findOne({ name }).exec();
     }
 
-    async getUserTasks(userId: string): Promise<unknown> {
-        const payload = await this.taskModel.find({ userId }).exec();        
-        return payload
+    async getUserTasks(userId: string): Promise<Task[]> {
+        return await this.taskModel.find({ userId }).exec();
     }
 
-    resetData() {
-        this.taskModel.deleteMany({});
+    async resetData() {
+        await this.taskModel.deleteMany({});
     }
 }
