@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpStatus,
+    Param,
+    Post,
+    Res,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.schema';
 
@@ -12,26 +20,15 @@ export class UserController {
         @Body('email') email: string,
     ): Promise<User> {
         try {
-            if (!this.isEmail(email)) {
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    message: 'Invalid email',
-                });
-            }
+            const response = await this.userService.addUser(email);
 
-            const existingUser = await this.userService.getUser(email);
-            if (existingUser) {
-                return res.status(HttpStatus.CONFLICT).json({
-                    message: 'User already exists',
-                });
-            }
-
-            await this.userService.addUser(email);
             return res.status(HttpStatus.CREATED).json({
+                response,
                 message: 'User created successfully',
             });
         } catch (error) {
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                message: 'An error occurred',
+            return res.status(error.status).json({
+                message: error.message,
             });
         }
     }
@@ -42,23 +39,12 @@ export class UserController {
         @Body('email') email: string,
     ): Promise<User> {
         try {
-            if (!this.isEmail(email)) {
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    message: 'Invalid email',
-                });
-            }
-
             const user = await this.userService.getUser(email);
-            if (!user) {
-                return res.status(HttpStatus.NOT_FOUND).json({
-                    message: 'User not found',
-                });
-            }
 
             return res.status(HttpStatus.OK).json(user);
         } catch (error) {
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                message: 'An error occurred',
+            return res.status(error.status).json({
+                message: error.message,
             });
         }
     }
@@ -77,10 +63,5 @@ export class UserController {
                 message: 'User not found',
             });
         }
-    }
-
-    private isEmail(email: string): boolean {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
     }
 }
