@@ -59,8 +59,8 @@ export class UserController {
 
             return res.status(HttpStatus.OK).json(user);
         } catch (error) {
-            return res.status(HttpStatus.NOT_FOUND).json({
-                message: 'User not found',
+            return res.status(error.status).json({
+                message: error.message,
             });
         }
     }

@@ -1,4 +1,9 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotImplementedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Task, TaskDocument } from './task.schema';
 import { Model } from 'mongoose';
@@ -14,12 +19,23 @@ export class TaskService {
         userId: string,
         priority: number,
     ): Promise<Task> {
+        if (!name || !userId || priority <= 0) {
+            throw new HttpException(
+                'Invalid task data',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
         const newTask = new this.taskModel({ name, userId, priority });
+
         return newTask.save();
     }
 
     async getTaskByName(name: string): Promise<Task> {
-        return await this.taskModel.findOne({ name }).exec();
+        const payload = await this.taskModel.findOne({ name }).exec();
+        if (!payload) {
+            throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+        }
+        return payload
     }
 
     async getUserTasks(userId: string): Promise<Task[]> {
